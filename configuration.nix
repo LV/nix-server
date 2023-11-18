@@ -59,10 +59,11 @@
     isNormalUser = true;
     extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
     shell = pkgs.zsh;
-  #   packages = with pkgs; [
+    packages = with pkgs; [
+      tmux
   #     firefox
   #     tree
-  #   ];
+    ];
   };
 
   # List packages installed in system profile. To search, run:
