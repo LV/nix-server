@@ -1,0 +1,73 @@
+#+title: Nix Server
+#+author: Luis Victoria
+
+* Specs
++ Compellent SC8000
++ Service Tag: 9K0LV12
+
+* Setting Up
+** Allowing SSH connections
++ Objective: Make server SSH-able through my own domain (lambda.lv)
+  + Ultimate goal is to run the following command: ~ssh lv@lambda.lv~
+1. Enable OpenSSH in =/etc/nixos/configuration.nix=:
+   #+begin_src nix
+services.openssh = {
+  enable = true;
+  settings.PermitRootLogin = "no";
+}
+   #+end_src
+2. Port forward the server with internal & external ports 22 [[https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xhtml][as per IANA]]. Make sure to use TCP protocol.
+3. Find out your IP address. The way I did it was through
+   #+begin_src bash
+curl ifconfig.me
+   #+end_src
+4. Add a /AAAA/ record in my DNS settings for my *lambda.lv* domain.
+
+* Troubleshooting
+** Fan on slot 4 does not stop spinning!
+*** Problem
++ Upon receiving power, fan on slot 4 turns on at full speed
++ Server does not need to be 'on', just needs to have electricity
++ Issue is not physical fan
+  + *Proof*: Despite switching the slots of the fans, the fan on slot 4 continues to be the one spinning
+
+*** Relevant error message
+Upon running diagnostics, the following error was received
+**** ePSA 4233.3 - Failure
+#+begin_quote
+Error code : 2000-8007
+Validation : 74986
+Msg : IPMI Sep 11 2023 02:10:28 Warning. System Board Fan4: sensor for System Board, warning event.
+
+Technical Support will need this information to diagnose the problem.
+Please record the above Error and Validation codes.
+Service Tag 9K0LV12, BIOS 2.9.0
+
+Do you want to continue testing?
+#+end_quote
+
+**** Potentially related error in logs?
+#+begin_quote
+IPMI Nov 14 2023 19:25:22 Critical. Chipset Err: Critical Event sensor PCI PERR (Bus 0 Device 5 Function 0) was asserted.
+#+end_quote
+
+*** Solution
+**** Sources
++ As [[https://www.dell.com/community/en/conversations/rack-servers/r720-fan-4-still-running-after-shutdown/647f9136f4ccf8a8de2ac071?commentId=647f97b7f4ccf8a8deac25b1][per this thread on Dell Community forum]], this is a firmware issue and not a physical hardware issue.
+  + Solution is to downgrade firmware to 2.41.40
+  + Other sources backing this
+    + A [[https://www.dell.com/community/en/conversations/rack-servers/dell-r720-fan-4-still-runs-after-shutdown/647f7cc5f4ccf8a8deb26540?commentId=647f7ccbf4ccf8a8deb300b3][Dell Community forum thread]] having fixed the issue by downgrading firmware
+    + A [[https://www.dell.com/community/en/conversations/rack-servers/r720-fan-sensor-error/647f90cef4ccf8a8de22517a?commentId=647f90f5f4ccf8a8de25846d][Dell Community forum with the same error]] listing firmware that is known to be problematic, although no official solution was given in that thread
++ Apparently, fan 4's role is [[https://www.dell.com/community/en/conversations/rack-servers/r720-fan-4-still-running-after-shutdown/647f9136f4ccf8a8de2ac071?commentId=647f9170f4ccf8a8de2f9f1a][to cool the iDRAC]]
+
+***** My version
++ Upon writing experiencing this issue, my firmware is at
+  + BIOS: 2.9.0
+  + iDRAC Settings Version: 1.65.65.04
+  + iDRAC Firmware Version: 2.65.65 (Build 15)
+
+**** Performing solution
++ Install RHEL 7.9 from [[https://developers.redhat.com/products/rhel/download?source=sso][this page]]
+  + Search and download [[IDRAC with Lifecycle Controller V.,2.41.40.40][iDRAC with Lifecycle Controller v2.41.40]] for RHEL7
+  + Install firmware using ~chmod +x iDRAC-firmwarefile.bin~ then ~./iDRAC-firmwarefile.bin~
+
