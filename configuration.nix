@@ -71,6 +71,7 @@
     git
     go
     neovim
+    python3
     wget
   ];
 
