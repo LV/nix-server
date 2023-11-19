@@ -18,7 +18,7 @@
   systemd.services.duckdns = {
     description = "DuckDNS update";
     serviceConfig = {
-      ExecStart = "${pkgs.bash}/bin/bash -c '${pkgs.curl}/bin/curl --silent \"https://www.duckdns.org/update?domains=luisv&token=" + "$(cat /etc/nixos/tokens/duckdns)" +"&ip=\"'";
+      ExecStart = "${pkgs.bash}/bin/bash -c '${pkgs.curl}/bin/curl --silent \"https://www.duckdns.org/update?domains=luisv&token=$(cat /etc/nixos/tokens/duckdns)&ip=\"'";
       Type = "oneshot";
       RemainAfterExit = "yes";
     };
