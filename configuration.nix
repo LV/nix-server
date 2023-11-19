@@ -14,6 +14,27 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
+  # Setup Dynamic DNS w/ DuckDNS
+  systemd.services.duckdns = {
+    description = "DuckDNS update";
+    serviceConfig = {
+      ExecStart = "${pkgs.bash}/bin/bash -c '${pkgs.curl}/bin/curl --silent \"https://www.duckdns.org/update?domains=luisv&token=" + "$(cat /etc/nixos/tokens/duckdns)" +"&ip=\"'";
+      Type = "oneshot";
+      RemainAfterExit = "yes";
+    };
+  };
+
+  # Timer to run update job from above every 5 minutes
+  # TODO: Fix this so that it runs every 5 minutes
+  #  systemd.timers.duckdns = {
+  #    description = "Run DuckDNS update every 5 minutes";
+  #    wantedBy = [ "timers.target" ];
+  #    timerConfig = {
+  #      OnCalendar = "*:0/5";
+  #      Unit = "duckdns.service";
+  #    };
+  #  };
+
   # networking.hostName = "nixos"; # Define your hostname.
   # Pick only one of the below networking options.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
