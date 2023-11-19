@@ -1,9 +1,18 @@
 #+title: Nix Server
 #+author: Luis Victoria
 
-* Specs
-+ Compellent SC8000
-+ Service Tag: 9K0LV12
+* Important!
++ For this to work, this configuration depends on the existence of the =/etc/nixos/vars= and =/etc/nixos/tokens= directories.
+  + Their existence makes these single =configuration.nix= files more general purpose.
+
+** Creating variables
+Unfortunately, using ~vim~ or ~echo~ to create variables will append a newline character at the end of the file and cause issues.
+
+For example, if you want to create a =/etc/nixos/vars/timezone= file, then you should perform the following command:
+
+#+begin_src bash
+sudo sh -c 'printf "America/New_York" > /etc/nixos/vars/timezone'
+#+end_src
 
 * Setting Up
 ** Allowing SSH connections
