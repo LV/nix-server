@@ -35,7 +35,10 @@
   #    };
   #  };
 
-  # networking.hostName = "nixos"; # Define your hostname.
+  # Use the command `sudo sh -c 'printf "yourhostname" > /etc/nixos/vars/hostname'` to generate your desired hostname (you do not want a newline char at the end of the file).
+  #  Check if your file has a newline char or not with `cat -E`; You should *not* see a `$` char at the end (indicating a newline), but a `%` char instead.
+  networking.hostName = builtins.readFile "/etc/nixos/vars/hostname";
+
   # Pick only one of the below networking options.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
   # networking.networkmanager.enable = true;  # Easiest to use and most distros use this by default.

@@ -1,2 +1,5 @@
 # Ignore sensitive `tokens/` folder
 tokens/
+
+# Ignore machine-specific `vars/` folder
+vars/
