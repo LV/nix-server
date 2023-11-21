@@ -3,8 +3,20 @@ Prints the public IPv6 address of the machine
 """
 
 import os
-import requests
 import sys
+import urllib.request
+
+
+# def send_req(service_url: str) -> str:
+# """
+# Sends a request to a webpage that tells you what IP you're coming from
+# """
+# try:
+# response = requests.get(service_url, timeout=5)
+# response.raise_for_status()  # Raises an HTTPError if the HTTP request returned an unsuccessful status code
+# return response.text.strip()
+# except requests.RequestException as e:
+# return f"Error: {e}"
 
 
 def send_req(service_url: str) -> str:
@@ -12,10 +24,9 @@ def send_req(service_url: str) -> str:
     Sends a request to a webpage that tells you what IP you're coming from
     """
     try:
-        response = requests.get(service_url, timeout=5)
-        response.raise_for_status()  # Raises an HTTPError if the HTTP request returned an unsuccessful status code
-        return response.text.strip()
-    except requests.RequestException as e:
+        with urllib.request.urlopen(service_url, timeout=5) as response:
+            return response.read().decode().strip()
+    except urllib.error.URLError as e:
         return f"Error: {e}"
 
 
