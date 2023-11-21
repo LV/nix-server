@@ -25,15 +25,15 @@
   };
 
   # Timer to run update job from above every 5 minutes
-  # TODO: Fix this so that it runs every 5 minutes
-  #  systemd.timers.duckdns = {
-  #    description = "Run DuckDNS update every 5 minutes";
-  #    wantedBy = [ "timers.target" ];
-  #    timerConfig = {
-  #      OnCalendar = "*:0/5";
-  #      Unit = "duckdns.service";
-  #    };
-  #  };
+  systemd.timers.duckdns = {
+    description = "Run DuckDNS update every 5 minutes";
+    wantedBy = [ "timers.target" ];
+    timerConfig = {
+      OnBootSec = "1min"; # start duckdns.service 1 minute after machine boots up to ensure machine has internet connection by the time script runs
+      OnUnitActiveSec = "5min"; # run update every 5 minutes (while active)
+      Unit = "duckdns.service";
+    };
+  };
 
   # Use the command `sudo sh -c 'printf "yourhostname" > /etc/nixos/vars/hostname'` to generate your desired hostname (you do not want a newline char at the end of the file).
   #  Check if your file has a newline char or not with `cat -E`; You should *not* see a `$` char at the end (indicating a newline), but a `%` char instead.
