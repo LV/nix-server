@@ -18,7 +18,7 @@
   systemd.services.duckdns = {
     description = "DuckDNS update";
     serviceConfig = {
-      ExecStart = "${pkgs.bash}/bin/bash -c '${pkgs.curl}/bin/curl --silent \"https://www.duckdns.org/update?domains=luisv&token=$(cat /etc/nixos/tokens/duckdns)&ip=\"'";
+      ExecStart = "${pkgs.bash}/bin/bash -c '${pkgs.curl}/bin/curl -s \"https://www.duckdns.org/update?domains=luisv&token=$(cat /etc/nixos/tokens/duckdns)&ip=&ipv6=$(${pkgs.python3}/bin/python3 /etc/nixos/scripts/get_public_ipv6_address.py)\" -o /home/lv/duckdns/duckdns.log'";
       Type = "oneshot";
       RemainAfterExit = "yes";
     };
@@ -114,10 +114,14 @@
   services.openssh = {
     enable = true;
     settings.PermitRootLogin = "no";
+    settings.PasswordAuthentication = true;
   };
 
   # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ ... ];
+  networking.firewall = {
+    enable = true;
+    allowedTCPPorts = [ 22 443 ];
+  };
   # networking.firewall.allowedUDPPorts = [ ... ];
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
